@@ -9,7 +9,7 @@ getAge = function(csvData) {
     var age = []
     csvData.forEach(function(row) {
         if(age.indexOf(row["Age"]) === -1){
-            age.push(row["Age"]);        
+            age.push(row["Age"]);
         }
     });
     return age;
@@ -20,7 +20,7 @@ getRace = function(csvData) {
     var race = []
     csvData.forEach(function(row) {
         if(race.indexOf(row["race"]) === -1){
-            race.push(row["race"]);        
+            race.push(row["race"]);
         }
     });
     return race;
@@ -69,28 +69,49 @@ csvFilter = function(csvData, arrColumnName, arrColumnValue) {
     return filteredData;
 }
 
-$(document).ready(function() {
-    loadCSV(csv_file, function(csvData) {
-        var age = getAge(csvData);
-        var race = getRace(csvData);
-        showTable(csvData);
+$(document).ready(function(){   
+   $("#submit-request").click(function(){
+        $("#show-data-div").html("Loading...");
+        var csvUrl=$("#csv-url").val();
+        if(csvUrl==''){
+          $("#show-data-div").html("Please fill in CSV file url");
+        } else {
+            $.ajax({
+            type: "POST",
+            url: "/get-data",
+            data: {
+              url: csvUrl
+            },            
+            success: function(jsonData){
+              console.log(jsonData);
+              showTable(jsonData);
+              var age = getAge(jsonData);
+              var race = getRace(jsonData);
 
-        $(".js-example-data-array").select2({
-          data: age
-        });
+              $("#select-group-1").select2({
+                data: age
+              });
 
-        $(".js-example-data-array-selected").select2({
-          data: race
-        });
+              $("#select-group-2").select2({
+                data: race
+              });
 
-        $("#select-group-1").change(function() {
-            filteredData = csvFilter(csvData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
-            showTable(filteredData);
-        });
+              $("#select-group-1").change(function() {
+                filteredData = csvFilter(jsonData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
+                showTable(filteredData);
+              });
 
-        $("#select-group-2").change(function() {
-            filteredData = csvFilter(csvData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
-            showTable(filteredData);
-        });
+              $("#select-group-2").change(function() {
+                filteredData = csvFilter(jsonData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
+                showTable(filteredData);
+              });
+            },
+            error: function(jqXHR, exception) {
+                $("#show-data-div").html(exception);
+            }
+            });
+            return false;
+        }  
     });
 });
+
