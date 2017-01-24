@@ -96,12 +96,7 @@ $(document).ready(function(){
                 data: race
               });
 
-              $("#select-group-1").change(function() {
-                filteredData = csvFilter(jsonData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
-                showTable(filteredData);
-              });
-
-              $("#select-group-2").change(function() {
+              $(".group-select").change(function() {
                 filteredData = csvFilter(jsonData, ["Age", "race"], [$("#select-group-1").val(), $("#select-group-2").val()] );
                 showTable(filteredData);
               });
