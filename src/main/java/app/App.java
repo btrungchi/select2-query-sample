@@ -13,6 +13,9 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+
 /**
  * Main class
  *
@@ -21,13 +24,16 @@ public class App
 {
     public static final String STATIC_PATH = "/public";
     public static final String ROUTE_GETDATA = "/get-data";
+    public static Logger logger = LogManager.getLogger(App.class);
 
     public static Route getDataPostAction = (Request request, Response response) -> {
         JsonArray arrReturnData = new JsonArray();
 
         // Get query data
-        String csvUrl = request.queryParams("url");        
+        String csvUrl = request.queryParams("url");
+        System.out.println(csvUrl);
         if (csvUrl == null) {
+            logger.info("csvUrl == null");
             return Utils.sendJsonContent(request, response, new JsonObject());
         }
 
@@ -47,7 +53,9 @@ public class App
             }
 
             reader.close();
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            logger.info(ex.getMessage(), ex);
             return Utils.sendJsonContent(request, response, new JsonObject());
         }
 
